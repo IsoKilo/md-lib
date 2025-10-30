@@ -83,7 +83,111 @@ reg_pushareg:			macros
 reg_popareg:			macros
 		movem.l	(sp)+, a0-a6
 
-	; Interrupts
+	; Conditional jmps
+
+jhi:					macro
+		bls.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jls:					macro	dest
+		bhi.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jcc:					macro	dest
+		bcs.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jcs:					macro	dest
+		bcc.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jne:					macro	dest
+		beq.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jeq:					macro	dest
+		bne.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jpl:					macro	dest
+		bmi.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jmi:					macro	dest
+		bpl.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jge:					macro	dest
+		blt.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jlt:					macro	dest
+		bge.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jgt:					macro	dest
+		ble.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+jle:					macro	dest
+		bgt.s	@cont\@
+		jmp		\1
+
+@cont\@:
+	endm
+
+	; Absolute conversions
+
+toabs:					macro	dest
+		tst.\0	\dest
+		bpl.s	@positive\@
+		neg.\0	\dest
+
+@positive\@:
+	endm
+
+
+movabs:					macro	src, dest
+		move.\0	\src, \dest
+		bpl.s	@positive\@
+		neg.\0	\dest
+
+@positive\@:
+		rts
+	endm
 
 int_setlevel:			macros
 		move.w	#$2000|(\1\<<8), sr
@@ -114,6 +218,12 @@ Z80_RELEASE:			equ $000
 
 ; Macros
 
+z80_assertbus:			macros
+		move.w	#Z80_ASSERT, z80_busreq
+
+z80_releasebus:			macros
+		move.w	#Z80_RELEASE, z80_busreq
+
 z80_assertwait:			macro
 @z80wait\@:
 		btst	#0, z80_busreq
@@ -125,6 +235,12 @@ z80_releasewait:		macro
 		btst	#0, z80_busreq
 		beq.s	@z80wait\@
 	endm
+
+z80_assertreset:		macros
+		move.w	#Z80_ASSERT, z80_reset
+
+z80_releasereset:		macros
+		move.w	#Z80_RELEASE, z80_reset
 
 ; --------------------------------------------------
 

@@ -9,6 +9,9 @@
 
 ; Constants
 
+TRUE:					equ -1
+FALSE:					equ 0
+
 BYTE:					equ 1			; Byte width.
 WORD:					equ 2			; Word width.
 LONG:					equ 4			; Long width.
@@ -327,6 +330,118 @@ BTN_Z_BIT:				equ 0
 BTN_Y_BIT:				equ 1
 BTN_X_BIT:				equ 2
 BTN_MODE_BIT:			equ 3
+
+	; EverDrive Core/Pro constants - https://github.com/krikzz/mega-ed-pub/blob/master/edio-mega/everdrive.c
+
+		; Command variables
+
+edcmd_header:			equ 0
+edcmd_type:				equ 2
+edcmd_addr:				equ 4
+edcmd_len:				equ 6
+edcmd_data:				equ $D
+
+		; Commands
+
+EDCMD_STATUS:			equ $10
+EDCMD_GETMODE:			equ $11
+EDCMD_IORESET:			equ $12
+EDCMD_VDCGET:			equ $13
+EDCMD_RTCGET:			equ $14
+EDCMD_RTCSET:			equ $15
+EDCMD_FLAREAD:			equ $16
+EDCMD_FLAWRITE:			equ $17
+EDCMD_FLAWRTSDC:		equ $18
+EDCMD_MEMREAD:			equ $19
+EDCMD_MEMWRITE:			equ $1A
+EDCMD_MEMSET:			equ $1B
+EDCMD_MEMTST:			equ $1C
+EDCMD_MEMCRC:			equ $1D
+EDCMD_FPGUSB:			equ $1E
+EDCMD_FPGSDC:			equ $1F
+EDCMD_FPGFLA:			equ $20
+EDCMD_RTCCAL:			equ $21
+EDCMD_USBWRITE:			equ $22
+EDCMD_FIFOWRITE:		equ $23
+EDCMD_UARTWRITE:		equ $24
+EDCMD_REINIT:			equ $25
+EDCMD_SYSINFO:			equ $26
+EDCMD_GAMECTR:			equ $27
+EDCMD_UPDEXE:			equ $28
+EDCMD_HOSTRESET:		equ $29
+EDCMD_RAPPSET:			equ $2B
+EDCMD_SUBSTS:			equ $2C
+EDCMD_EFUUNPCK:			equ $2E
+EDCMD_EFUUPDT:			equ $2F
+EDCMD_ROMPATH:			equ $31
+EDCMD_EFUFILE:			equ $32
+EDCMD_STATUS2:			equ $40
+EDCMD_CDMOUNT:			equ $41
+EDCMD_DISKINIT:			equ $C0
+EDCMD_DISKREAD:			equ $C1
+EDCMD_DISKWRITE:		equ $C2
+EDCMD_DIROPEN:			equ $C3
+EDCMD_DIRREAD:			equ $C4
+EDCMD_DIRLOAD:			equ $C5
+EDCMD_DIRSIZE:			equ $C6
+EDCMD_DIRPATH:			equ $C7
+EDCMD_DIRGET:			equ $C8
+EDCMD_FILEOPEN:			equ $C9
+EDCMD_FILEREAD:			equ $CA
+EDCMD_FILEREADMEM:		equ $CB
+EDCMD_FILEWRITE:		equ $CC
+EDCMD_FILEWRITEMEM:		equ $CD
+EDCMD_FILECLOSE:		equ $CE
+EDCMD_FILEPOINTER:		equ $CF
+EDCMD_FILEINFO:			equ $D0
+EDCMD_FILECRC:			equ $D1
+EDCMD_DIRMAKE:			equ $D2
+EDCMD_FILEDELETE:		equ $D3
+EDCMD_FILESEEKIDX:		equ $D4
+EDCMD_FILEAVB:			equ $D5
+EDCMD_FILEFCP:			equ $D6
+EDCMD_FILESEEKPAT:		equ $D8
+EDCMD_DIRTEST:			equ $D9
+EDCMD_FILETEST:			equ $DA
+
+	; EverDrive X3/X5/X7 constants
+
+		; Status register flags
+
+EDXSTS_SPI:				equ %0000000000000001	; SPI ready flag. Shouldn't be necessary as SPI runs faster than the 68k.
+EDXSTS_USBWRT:			equ %0000000000000010	; USB write ready flag.
+EDXSTS_USBRD:			equ %0000000000000100	; USB read ready flag.
+EDXSTS_SD:				equ %0000000000000000	; SD card flag.
+EDXSTS_SDHC:			equ %0100000000000000	; SDHC card flag.
+
+		; Configuration flags
+
+EDXCFG_SIMPLE:			equ %0000000000000001	; SPI simple single speed read/write mode.
+EDXCFG_QREAD:			equ %0000000000000110	; SPI quick read mode.
+EDXCFG_QWRITE:			equ %0000000000000010	; SPI quick write mode.
+
+; Macros
+
+	; EverDrive Core/Pro
+
+ed_docmd:				macro	type
+	local cmd
+cmd:	equ (\type\<<8)|(-\type\-1)
+		move.w	#$2BD4, -(sp)					; Write command header. '+' and '+' bit mirrored.
+		move.w	#\#cmd, -(sp)					; Write command type with bit mirror.
+	rept 4
+		move.b	(sp)+, io_edfifodat				; Send command to ED FIFO.
+	endr
+	endm
+
+	; EverDrive X3/X5/X6 macros
+
+edx_wait:				macro	status
+@edxwait\@:
+		move.w	io_edxsts, d7					; Get ED status.
+		and.b	\status, d7						; Check status.
+		beq.s	@edxwait\@						; If no bits were masked, wait.
+	endm
 
 ; --------------------------------------------------
 

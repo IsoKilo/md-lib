@@ -291,13 +291,13 @@ movabs:		macro	src, dest				; Moves source register to destination and converts 
 flagtst:	macros	flag, array				; Checks a flag bit from a flag array.
 		btst	#\flag\&7, \array\+(\flag\>>3)
 
-flag_set:	macros	flag, array				; Sets a flag bit in a flag array.
+flagset:	macros	flag, array				; Sets a flag bit in a flag array.
 		bset	#\flag\&7, \array\+(\flag\>>3)
 
-flag_clr:	macros	flag, array				; Clears a flag bit in a flag array.
+flagclr:	macros	flag, array				; Clears a flag bit in a flag array.
 		bclr	#\flag\&7, \array\+(\flag\>>3)
 
-flag_chg:	macros	flag, array				; Flips a flag bit in a flag array.
+flagchg:	macros	flag, array				; Flips a flag bit in a flag array.
 		bchg	#\flag\&7, \array\+(\flag\>>3)
 
 ; Conditional long jump macros

@@ -1,11 +1,11 @@
-# MD.lib (WORK IN PROGRESS)
+# megadrive.inc (WORK IN PROGRESS)
 
 Hardware definitions file for the SEGA Mega Drive.
 
 ---
 
-MD.lib is a massive definitions file for the SEGA Mega Drive, it mostly targets SN ASM68k.
-Assembler options should include /k /o c+ /o ws+.
+megadrive.inc is a massive definitions file for the SEGA Mega Drive, it mostly targets SN ASM68k.
+Assembler options should include /k /o c+ /o l+ /o ws+.
 
 It's highly encouraged to make a pull request if you have a definition you want to add, please just try to adhere to the formatting and nomenclature.
 

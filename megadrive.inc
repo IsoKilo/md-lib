@@ -808,19 +808,19 @@ srcreg:		equ ((VREG_DMASRCMID|((((\src)/word)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDT
 mdreg:		equ (VREG_DMASRCHI|DMAMD_TRANSFER|(((\src)>>17)&$7F))
 
 	if narg>4
-		move.l	#$\$lenreg, \ctrl
-		move.l	#$\$srcreg, \ctrl
-		move.w	#$\$mdreg, \ctrl
+		move.l	#lenreg, \ctrl
+		move.l	#srcreg, \ctrl
+		move.w	#mdreg, \ctrl
 		move.w	#($\$cmd)>>WORD_WIDTH, \ctrl
 		move.w	#($\$cmd)&WORD_MAX, -(sp)
 		move.w	(sp)+, \ctrl
 	else
 		lea	VDP_CTRL, a6
-		move.l	#$\$lenreg, (a6)
-		move.l	#$\$srcreg, (a6)
-		move.w	#$\$mdreg, (a6)
-		move.w	#($\$cmd)>>WORD_WIDTH, (a6)
-		move.w	#($\$cmd)&WORD_MAX, -(sp)
+		move.l	#lenreg, (a6)
+		move.l	#srcreg, (a6)
+		move.w	#mdreg, (a6)
+		move.w	#cmd>>WORD_WIDTH, (a6)
+		move.w	#cmd&WORD_MAX, -(sp)
 		move.w	(sp)+, (a6)
 	endif
 	endm
@@ -831,7 +831,7 @@ lenreg:		equ ((VREG_DMALENHI|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|
 
 	if narg>3
 		move.w	#VREG_AUTOINC|byte, \ctrl
-		move.l	#$\$lenreg, \ctrl
+		move.l	#lenreg, \ctrl
 		move.w	#VREG_DMASRCHI|DMAMD_FILL, \ctrl
 		vdp_cmd	VRAM, DMA, \addr, \ctrl
 	if instr("\ctrl", "(a")
@@ -844,7 +844,7 @@ lenreg:		equ ((VREG_DMALENHI|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|
 	else
 		lea	VDP_CTRL, a6
 		move.w	#VREG_AUTOINC|byte, (a6)
-		move.l	#$\$lenreg, (a6)
+		move.l	#lenreg, (a6)
 		move.w	#VREG_DMASRCHI|DMAMD_FILL, (a6)
 		vdp_cmd	VRAM, DMA, \addr, (a6)
 		move.w	#\value\<<BYTE_WIDTH, -4(a6)
@@ -863,19 +863,19 @@ srcreg:		equ ((VREG_DMASRCMID|(((\src)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VR
 
 	if narg>3
 		move.w	#VREG_AUTOINC|byte, \ctrl
-		move.l	#$\$lenreg, \ctrl
-		move.l	#$\$srcreg, \ctrl
+		move.l	#lenreg, \ctrl
+		move.l	#srcreg, \ctrl
 		move.w	#VREG_DMASRCHI|DMAMD_COPY, \ctrl
-		move.l	#$\$cmd, \ctrl
+		move.l	#cmd, \ctrl
 		dma_wait	\ctrl
 		move.w	#VREG_AUTOINC|word, \ctrl
 	else
 		lea	VDP_CTRL, a6
 		move.w	#VREG_AUTOINC|byte, (a6)
-		move.l	#$\$lenreg, (a6)
-		move.l	#$\$srcreg, (a6)
+		move.l	#lenreg, (a6)
+		move.l	#srcreg, (a6)
 		move.w	#VREG_DMASRCHI|DMAMD_COPY, (a6)
-		move.l	#$\$cmd, (a6)
+		move.l	#cmd, (a6)
 		dma_wait	(a6)
 		move.w	#VREG_AUTOINC|word, (a6)
 	endif

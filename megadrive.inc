@@ -799,20 +799,20 @@ cmd:		equ ((((VCMD_\type\&VCMD_\rwd\)&3)<<30)|(((\addr)&$3FFF)<<WORD_WIDTH)|(((V
 ; DMA macros
 dma_transfer:	macro	type, src, addr, len, ctrl		; Transfer from 68k to the VDP.
 	local	cmd
-cmd:		equ ((((VCMD_\type\&VCMD_DMA)&3)<<30)|(((\addr)&$3FFF)<<WORD_WIDTH)|(((VCMD_\type\&VCMD_DMA)&$FC)<<2)|(((\addr)&$C000)>>14))
+cmd:		equ (((VCMD_\type\&VCMD_DMA)&3)<<30)|(((\addr)&$3FFF)<<WORD_WIDTH)|(((VCMD_\type\&VCMD_DMA)&$FC)<<2)|(((\addr)&$C000)>>14)
 	local	lenreg
-lenreg:		equ ((VREG_DMALENHI|((((\len)/word)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)/word)&BYTE_MAX)))
+lenreg:		equ (VREG_DMALENHI<<WORD_WIDTH|((((\len)/word)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)/word)&BYTE_MAX))
 	local	srcreg
-srcreg:		equ ((VREG_DMASRCMID|((((\src)/word)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMASRCLO|(((\src)/word)&BYTE_MAX)))
+srcreg:		equ (VREG_DMASRCMID<<WORD_WIDTH|((((\src)/word)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMASRCLO|(((\src)/word)&BYTE_MAX))
 	local	mdreg
-mdreg:		equ (VREG_DMASRCHI|DMAMD_TRANSFER|(((\src)>>17)&$7F))
+mdreg:		equ VREG_DMASRCHI|DMAMD_TRANSFER|(((\src)>>17)&$7F)
 
 	if narg>4
 		move.l	#lenreg, \ctrl
 		move.l	#srcreg, \ctrl
 		move.w	#mdreg, \ctrl
-		move.w	#($\$cmd)>>WORD_WIDTH, \ctrl
-		move.w	#($\$cmd)&WORD_MAX, -(sp)
+		move.w	#cmd>>WORD_WIDTH, \ctrl
+		move.w	#cmd&WORD_MAX, -(sp)
 		move.w	(sp)+, \ctrl
 	else
 		lea	VDP_CTRL, a6
@@ -827,7 +827,7 @@ mdreg:		equ (VREG_DMASRCHI|DMAMD_TRANSFER|(((\src)>>17)&$7F))
 
 dma_fill:	macro	value, addr, len, ctrl			; Fill VRAM with byte value.
 	local	lenreg
-lenreg:		equ ((VREG_DMALENHI|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)-1)&BYTE_MAX)))
+lenreg:		equ (VREG_DMALENHI<<WORD_WIDTH|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)-1)&BYTE_MAX))
 
 	if narg>3
 		move.w	#VREG_AUTOINC|byte, \ctrl
@@ -855,11 +855,11 @@ lenreg:		equ ((VREG_DMALENHI|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|
 
 dma_copy:	macro	src, addr, len, ctrl			; Copy VRAM to VRAM.
 	local	cmd
-cmd:		equ ($000000C0|(((\addr)&$3FFF)<<16)|(((\addr)&$C000)>>14))
+cmd:		equ $000000C0|(((\addr)&$3FFF)<<16)|(((\addr)&$C000)>>14)
 	local	lenreg
-lenreg:		equ ((VREG_DMALENHI|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)-1)&BYTE_MAX)))
+lenreg:		equ (VREG_DMALENHI<<WORD_WIDTH|((((\len)-1)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMALENLO|(((\len)-1)&BYTE_MAX))
 	local	srcreg
-srcreg:		equ ((VREG_DMASRCMID|(((\src)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMASRCLO|((\src)&BYTE_MAX)))
+srcreg:		equ (VREG_DMASRCMID<<WORD_WIDTH|(((\src)&(BYTE_MAX<<BYTE_WIDTH))<<BYTE_WIDTH))|(VREG_DMASRCLO|((\src)&BYTE_MAX))
 
 	if narg>3
 		move.w	#VREG_AUTOINC|byte, \ctrl

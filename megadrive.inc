@@ -788,11 +788,11 @@ COLOR_MAGENTA:	equ $E0E
 ; VDP command macro
 vdp_cmd:	macro	type, rwd, addr, ctrl
 	local	cmd
-cmd:		equ ((((VCMD_\type\&VCMD_\rwd\)&3)<<30)|(((\addr)&$3FFF)<<WORD_WIDTH)|(((VCMD_\type\&VCMD_\rwd\)&$FC)<<2)|(((\addr)&$C000)>>14))
+cmd:		equ (((VCMD_\type\&VCMD_\rwd\)&3)<<30)|(((\addr)&$3FFF)<<WORD_WIDTH)|(((VCMD_\type\&VCMD_\rwd\)&$FC)<<2)|(((\addr)&$C000)>>14)
 	if narg>3
-		move.l	#$\$cmd, \ctrl
+		move.l	#cmd, \ctrl
 	else
-		move.l	#$\$cmd, VDP_CTRL
+		move.l	#cmd, VDP_CTRL
 	endif
 	endm
 

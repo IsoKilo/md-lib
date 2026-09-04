@@ -914,6 +914,36 @@ YM_D1:		equ $A04003					; FM global/channel 4-6 register data.
 PSG_CTRL:	equ $C00011					; PSG control port.
 PSG_Z80:	equ $A07F11					; Z80-side PSG control port.
 
+; Constants
+FM_COUNT:	equ 6						; 6 FM channels, 6 FM channels, or 5 + 1 DAC channel.
+PSG_COUNT:	equ 4						; 4 PSG channels, 3 square wave channels, 1 noise channel.
+
+; YM-2612 registers
+YREG_BIT:	equ 8						; FM register bit shift.
+
+YREG_LFO:	equ $22<<YREG_BIT				; Low frequency oscillator.
+YREG_TIMERAHI:	equ $24<<YREG_BIT				; Timer A frequency high byte.
+YREG_TIMERALO:	equ $25<<YREG_BIT				; Timer A frequency low byte.
+YREG_TIMERB:	equ $26<<YREG_BIT				; Timer B frequency.
+YREG_TIMECTRL:	equ $27<<YREG_BIT				; Timer control and FM channel 3 mode.
+YREG_KEYON:	equ $28<<YREG_BIT				; Key-on/off.
+YREG_DACOUT:	equ $2A<<YREG_BIT				; DAC output.
+YREG_DACFLAG:	equ $2B<<YREG_BIT				; FM 6/DAC flag.
+YREG_MULDT:	equ $30<<YREG_BIT				; Multiply and detune register base.
+YREG_TL:	equ $40<<YREG_BIT				; Total level register base.
+YREG_ARRS:	equ $50<<YREG_BIT				; Attack rate and rate scaling register base.
+YREG_DR:	equ $60<<YREG_BIT				; Decay rate and AMS flag register base.
+YREG_SR:	equ $70<<YREG_BIT				; Sustain rate register base.
+YREG_RRSL:	equ $80<<YREG_BIT				; Release rate and sustain level register base.
+YREG_SSGEG:	equ $90<<YREG_BIT				; SSG-EG enable register base.
+YREG_FREQ:	equ $A0<<YREG_BIT				; Frequency register base.
+YREG_ALGOFB:	equ $B0<<YREG_BIT				; Algorithm and feedback register base.
+YREG_PMSAMS:	equ $B4<<YREG_BIT				; Panning, PMS, and AMS register base.
+
+; PSG registers
+PREG_PITCH:	equ $80						; Pitch register.
+PREG_VOLUME:	equ $90						; Attenuation (volume) register.
+
 ; --------------------------------------------------
 
 ; ====================================================================================================
